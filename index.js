@@ -1,12 +1,19 @@
 const express = require('express');
+const https = require('https');
+const fs = require('fs');
+
 const app = express();
-const port = 3000;
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-// Modify this line to bind to 0.0.0.0
-app.listen(port, '0.0.0.0', () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+const httpsOptions = {
+  key: fs.readFileSync('/etc/letsencrypt/live/prominentaws.zapto.org/privkey.pem'),
+  cert: fs.readFileSync('/etc/letsencrypt/live/prominentaws.zapto.org/cert.pem'),
+  ca: fs.readFileSync('/etc/letsencrypt/live/prominentaws.zapto.org/chain.pem')
+};
+
+https.createServer(httpsOptions, app).listen(443, () => {
+  console.log('HTTPS server running on port 443');
 });
